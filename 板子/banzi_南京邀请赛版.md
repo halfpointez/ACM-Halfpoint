@@ -59,6 +59,8 @@
 |  六   | 数论基础                     |  22   |
 |  6.1  | 费马小定理笔记               |  22   |
 |  6.2  | 等比数列求和公式笔记         |  24   |
+|  七   | 筛法（欧拉筛）               |  26   |
+|  八   | 欧拉路径与欧拉回路           |  27   |
 
 ---
 
@@ -607,14 +609,13 @@ int LCA(int a, int b) {
 }
 ```
 
-树状数组
-
-用法
+## 2.6 树状数组
+### 用法
 一切可差分的信息 都能用树状数组来维护 例如 总和 总乘
 
 树状数组能维护
 
-树状数组的思想如下
+### 树状数组的思想
 在设计之初 数组一定要从1开始
 树状数组的下标代表的是该下标维护的原数组右边界
 下标的lowbit是维护的数组的长度
@@ -623,42 +624,40 @@ int LCA(int a, int b) {
 在查询时候 通过两个前缀和就能得到需要的差分信息
 反之 在修改的时候 一直加lowbit就是一直在扩展自己的范围且不会遗漏
 
-复杂度：
+### 复杂度
 时间 查询 修改均为logn
 初始化 一般为nlogn 如果有所有信息 通过只修改自己的上一个父数组可以优化到n
 
+### 函数
 树状数组一般需要四个函数
-1.lowbit函数 获取lowbit值
-2.update函数 用来更新树状数组
-3.init函数 初始化树状数组
-4.query函数 用来查找
+1. `lowbit`函数 获取lowbit值
+2. `update`函数 用来更新树状数组
+3. `init`函数 初始化树状数组
+4. `query`函数 用来查找
 
 (以下板子均为和 查询也是区间和)
 
-1.lowbit函数如下
-
+### 完整模板
+```cpp
+// 1.lowbit函数如下
 i64 lowbit(int x) {
 	return (x & -x);
 }
 
-2.update函数如下
-
+// 2.update函数如下
 void update(int x, int k) {
 	for(int i = x; i <= n; i += lowbit(i)) {
 		c[i] += k; //c[i]为树状数组
 	}
 }
 
-3.init函数如下
-
-logn版本
+// 3.init函数如下 logn版本
 	for(int i = 1; i <= n; i++) {
 		cin >> arr[i];
 		update(i, arr[i]);
 	}
 
-n版本
-
+// 3.init函数如下 n版本
 // 1. 预装填：把 tree 变成 a 的副本（下标从 1 开始）
 for (int i = 1; i <= n; i++) {
     tree[i] = a[i];
@@ -674,7 +673,7 @@ for (int i = 1; i <= n; i++) {
     }
 }
 
-4.query函数如下
+// 4.query函数如下
 int query(int a) {
 	int sum = 0;
 	for(int i = a; i >= 1; i -= lowbit(i)) {
@@ -682,6 +681,7 @@ int query(int a) {
 	}
 	return sum;
 }
+```
 
 
 
@@ -1078,16 +1078,18 @@ int exgcd(int a, int b, int &x, int &y) {
 ---
 
 
-差分数组
+## 差分数组
+### 用法
 差分数组主要用于解决区间批量修改的问题。它的核心思想是将对区间的操作转化为对两个单点（端点）的操作，从而显著降低时间复杂度。
 
-对于差分数组有两个函数
-1.初始化差分数组
-$d_1 = a_1$$d_i = a_i - a_{i-1}$ （对于 $i > 1$）
-2.区间修改：执行 d[L] += v; d[R + 1] -= v;。
-还原数组：对差分数组 $d$ 求一遍前缀和，即可得到修改后的原数组 $a$。
+### 实现步骤
+对于差分数组有两个函数：
+1. 初始化差分数组：$d_1 = a_1$，$d_i = a_i - a_{i-1}$（对于 $i > 1$）
+2. 区间修改：执行 `d[L] += v; d[R + 1] -= v;`
+3. 还原数组：对差分数组 $d$ 求一遍前缀和，即可得到修改后的原数组 $a$
 
-板子如下
+### 完整模板
+```cpp
 #include <iostream>
 #include <vector>
 
@@ -1117,20 +1119,21 @@ int main() {
     
     return 0;
 }
+```
 
 
 
-线段树
-
-线段树维护的信息类型
+## 线段树
+### 维护的信息类型
 父范围的信息能从子范围得到 满足的如区间的 最大值 最小值 和 乘积等 不满足的如 范围上出现次数最多的数字
 
-功能
+### 功能
 范围查询 修改 时间复杂度logn
 
-如何判断线段树范围修改能否在logn时间内修改完成 就看在修改后能否在o(1)时间内得到修改后的信息
+### 如何判断范围修改能否在logn时间内完成
+就看在修改后能否在o(1)时间内得到修改后的信息
 
-线段树的思想
+### 线段树的思想
 首先 线段树是一个维护信息的完全二叉树
 如图
 
@@ -1138,24 +1141,25 @@ int main() {
 在这个过程中 存在函数f(l, r, i) 依次代表l, r 维护的区间的长度
 i 存储这个区间信息的树的数组下标
 递归f(l, m, 2 * i) f(m + 1, r, 2 * i + 1)就能维护线段树的左右区间并且以此放在左孩子和右孩子上
+
 ![alt text](v2-7ac2125b295f96d209968be250d1dd08_1440w.png)
 
+空间需要一般为4n 需要极限压缩可以为不大于 $n$ 的最大 2 的幂次（即 $2^{\lfloor \log_2 n \rfloor}$）
 
-空间需要一般为4n 需要极限压缩可以为不大于 $n$ 的最大 2 的幂次（即 $2^{\lfloor \log_2 n \rfloor}$
-
+### 代码结构
 线段树的代码一般包含三个部分
 
-1.bulid函数 建立一开始的线段树
-用递归来完成
-2.query函数 查询线段树上的信息
-用递归来完成
-每次查询三种可能
-要查询的元素在不在当前区间上，在则认为命中了 直接返回
-如果部分在区间上 分为在左边 在右边的情况 依次判断 继续递归
+1. `bulid`函数 建立一开始的线段树
+   用递归来完成
+2. `query`函数 查询线段树上的信息
+   用递归来完成
+   每次查询三种可能
+   要查询的元素在不在当前区间上，在则认为命中了 直接返回
+   如果部分在区间上 分为在左边 在右边的情况 依次判断 继续递归
+3. `update`函数 更新区间的信息 其中还包含up 和 down数组
 
-3.update函数 更新区间的信息 其中还包含up 和 down数组
-
-
+### 完整模板
+```cpp
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -1241,7 +1245,7 @@ struct LazySegmentTree {
         apply(p << 1, tag[p]);
         apply(p << 1 | 1, tag[p]);
         tag[p] = Tag();
-    } 向下传递信息
+    } // 向下传递信息
 
     void modify(int p, int l, int r, int x, const Info &v) {
         if (r - l == 1) {
@@ -1310,14 +1314,15 @@ int main() {
 
     return 0;
 }
+```
 
-0-1 BFS 
-适用范围
+## 0-1 BFS
+### 适用范围
 边权值为可能有，也可能没有（由于 BFS 适用于权值为 1 的图，所以一般权值是 0 或 1），或者能够转化为这种边权值的最短路问题．
 
 例如在走迷宫问题中，你可以花 1 个金币走 5 步，也可以不花金币走 1 步，这就可以用 0-1 BFS 解决．
 
-实现
+### 实现
 一般情况下，我们把没有权值的边扩展到的点放到队首，有权值的边扩展到的点放到队尾．这样即可保证像普通 BFS 一样整个队列队首到队尾权值单调不下降．
 
 ---
@@ -1568,10 +1573,9 @@ int main() {
 	这两个公式的推导，本质上是观察**“质因子的种类”**有没有发生变化。我们再次祭出欧拉函数的通式（也就是你图片里的那个）：$$\varphi(n) = n \cdot \prod_{p|n} \left(1 - \frac{1}{p}\right)$$这个公式告诉我们：$\varphi(n)$ 的值由 $n$ 本身 和 $n$ 包含的所有不同质因子 共同决定。公式一：当 $i \pmod p = 0$ 时这种情况意味着 $p$ 已经是 $i$ 的质因子了。分析 $\varphi(i)$：$$\varphi(i) = i \cdot \left(1 - \frac{1}{p_1}\right) \cdot \left(1 - \frac{1}{p_2}\right) \dots \cdot \left(1 - \frac{1}{\mathbf{p}}\right)$$分析 $\varphi(i \cdot p)$：当我们把 $i$ 乘以 $p$ 得到新数时，新数的质因子集合与 $i$ 的完全一样（因为 $p$ 本来就在里面）。所以，公式右边的连乘部分（那些括号）一个都不会变。$$\varphi(i \cdot p) = (i \cdot p) \cdot \underbrace{\left(1 - \frac{1}{p_1}\right) \dots \cdot \left(1 - \frac{1}{p}\right)}_{\text{这部分就是 } \frac{\varphi(i)}{i}}$$得出结论：$$\varphi(i \cdot p) = (i \cdot p) \cdot \frac{\varphi(i)}{i} = \mathbf{\varphi(i) \cdot p}$$直观理解：质因子种类没变，“打折比例”就没变，数值翻了 $p$ 倍，结果自然也翻 $p$ 倍。公式二：当 $i \pmod p \neq 0$ 时这种情况意味着 $p$ 是一个全新的质因子，它不在 $i$ 原有的质因子列表里。分析 $\varphi(i)$：$$\varphi(i) = i \cdot \prod_{p_{old}|i} \left(1 - \frac{1}{p_{old}}\right)$$分析 $\varphi(i \cdot p)$：因为 $p$ 是新来的，根据通式，我们不仅要把前面的系数乘以 $p$，还要在后面多乘一个新括号 $(1 - \frac{1}{p})$。$$\varphi(i \cdot p) = (i \cdot p) \cdot \left[ \prod_{p_{old}|i} \left(1 - \frac{1}{p_{old}}\right) \right] \cdot \mathbf{\left(1 - \frac{1}{p}\right)}$$化简：中间那一团就是 $\varphi(i)$，所以：$$\varphi(i \cdot p) = \varphi(i) \cdot p \cdot \left(1 - \frac{1}{p}\right)$$把 $p$ 乘进括号里：$p \times (1 - \frac{1}{p}) = p - 1$。$$\mathbf{\varphi(i \cdot p) = \varphi(i) \cdot (p - 1)}$$
 
 
-	费马小定理
+### 费马小定理
 
-
-	$$每个数 / 2 \text{ 向下取整的和} = \frac{数组总和 - 奇数的个数}{2}$$
+$$每个数 / 2 \text{ 向下取整的和} = \frac{数组总和 - 奇数的个数}{2}$$
 
 ---
 
@@ -1611,5 +1615,110 @@ void euler_sieve(int n) {
             if (i % p == 0) break; //合数 = 最小质数 * 一个数 保证当前是最小质数 才能保证合数的唯一性
         }
     }
+}
+```
+
+---
+
+<p align="right">第 27 页</p>
+
+# 八、欧拉路径与欧拉回路
+
+## 8.1 判定条件
+### 用法
+判断一个图是否存在欧拉路径或欧拉回路（一笔画问题）：能否从一点出发，每条边恰好经过一次（欧拉回路要求最终回到起点）。
+
+### 判定条件（图需连通/弱连通）
+- 无向图：
+  - 欧拉回路：所有点的度数均为偶数
+  - 欧拉路径：恰有 0 或 2 个奇度点（恰有 2 个奇度点时，它们分别是起点和终点）
+- 有向图：
+  - 欧拉回路：所有点 入度 = 出度
+  - 欧拉路径：恰有一个点 出度 - 入度 = 1（起点），恰有一个点 入度 - 出度 = 1（终点），其余点 入度 = 出度
+
+## 8.2 Hierholzer算法
+### 用法
+在 $\mathcal{O}(n + m)$ 时间内求出一条欧拉路径/欧拉回路。
+
+### 实现步骤
+1. 选起点：欧拉回路任选一个有边的点；欧拉路径选出度 - 入度 = 1 的点（无向图选奇度点）
+2. 从起点 DFS，每走过一条边就删掉这条边（无向图还要删掉反向边）
+3. 走到无路可走时，将当前点压入答案
+4. 答案逆序输出即为欧拉路径/回路
+
+### 完整模板（有向图）
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+
+vector<vector<int>> G; // 邻接表
+vector<int> indeg, outdeg;
+vector<int> ans;
+int n, m;
+
+bool check() { // 有向图判定：是否存在欧拉路径/回路
+    int start_cnt = 0, end_cnt = 0;
+    for (int i = 1; i <= n; i++) {
+        if (outdeg[i] - indeg[i] == 1) start_cnt++;
+        else if (indeg[i] - outdeg[i] == 1) end_cnt++;
+        else if (indeg[i] != outdeg[i]) return false;
+    }
+    return (start_cnt == 0 && end_cnt == 0) || (start_cnt == 1 && end_cnt == 1);
+}
+
+void hierholzer(int u) {
+    while (!G[u].empty()) {
+        int v = G[u].back();
+        G[u].pop_back();
+        hierholzer(v);
+    }
+    ans.push_back(u); // 逆序输出 ans 即欧拉路径
+}
+
+int main() {
+    cin >> n >> m;
+    G.resize(n + 1);
+    indeg.assign(n + 1, 0);
+    outdeg.assign(n + 1, 0);
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        G[u].push_back(v);
+        outdeg[u]++;
+        indeg[v]++;
+    }
+    if (!check()) {
+        cout << "No" << endl;
+        return 0;
+    }
+    int start = 1;
+    for (int i = 1; i <= n; i++) {
+        if (outdeg[i] - indeg[i] == 1) start = i;
+    }
+    hierholzer(start);
+    reverse(ans.begin(), ans.end());
+    for (auto &i : ans) {
+        cout << i << ' ';
+    }
+    return 0;
+}
+```
+
+### 完整模板（无向图）
+```cpp
+vector<vector<pair<int, int>>> G; // (邻接点, 边编号)
+vector<bool> used; // 边是否被使用过
+vector<int> ans;
+
+void dfs(int u) {
+    while (!G[u].empty()) {
+        auto [v, eid] = G[u].back();
+        G[u].pop_back();
+        if (used[eid]) continue;
+        used[eid] = true;
+        dfs(v);
+    }
+    ans.push_back(u);
 }
 ```

@@ -17,3 +17,7 @@
 # Large ebooks (uncomment if you want to track them with Git LFS)
 # 摸鱼/*.pdf
 # 摸鱼/*.epub
+
+# 个人实习材料（含个人信息，不同步到公开仓库）
+实习材料/
+实习报告*.doc

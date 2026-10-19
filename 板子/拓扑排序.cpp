@@ -1,0 +1,45 @@
+	#include <bits/stdc++.h>
+	using namespace std;
+	using i64 = long long;
+	#define endl '\n'
+
+	vector<i64> topo_sort(vector<i64> &In_Deg, vector<vector<i64>>	&Node, queue<i64> &q) {
+		i64 n = Node.size() - 1;
+		vector<i64> ans;
+		for(int i = 1; i <= n; i++) {
+			if(In_Deg[i] == 0) q.push(i);
+		}
+		while (!q.empty()) {
+			i64 cur = q.front();
+			q.pop();
+			ans.push_back(cur);
+			for(auto &i:Node[cur]) {
+				In_Deg[i]--;
+				if(In_Deg[i] == 0) {
+					q.push(i);
+				}
+			}
+		}
+		return ans;
+	}
+
+	int main() {
+		int n;
+		cin >> n;
+		vector<i64> ans;
+		vector<i64> In_Deg(n + 1); //记录每个节点的入度
+		vector<vector<i64>>	Node(n + 1); //记录每个节点的出度
+		queue<i64> q; //当前入度为0的节点
+		for(int i = 1; i <= n; i++) {
+			while (1) {
+				int cur;
+				cin >> cur;
+				if(cur == 0) break;
+				Node[i].push_back(cur);
+				In_Deg[cur]++;
+			}
+		}
+		ans = topo_sort(In_Deg, Node, q);
+		for(auto &i:ans) cout << i << ' ';
+		
+	}
